@@ -1,0 +1,7 @@
+base_url = 'https://sokolov.ru/'
+profile_url = base_url + 'personal/main/'
+jewelry_catalog_url = base_url + 'jewelry-catalog/'
+jewelry_type_catalog_url = base_url + 'jewelry-catalog/earrings/'
+checkout_url = base_url + 'basket/'
+thank_you_url = base_url + 'basket/thank-you/'
+orders_url = base_url + '/personal/orders/'
