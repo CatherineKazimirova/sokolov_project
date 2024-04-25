@@ -1,5 +1,3 @@
-import time
-
 import utilities.common_urls
 from base.base_page import Base
 from selenium.webdriver.common.keys import Keys
@@ -13,14 +11,16 @@ class Catalog(Base):
 
     # Locators
     header_catalog_button = 'button[data-qa="header_catalog_nav_open_btn"]'
-    catalog_all_categories_banner = 'a[data-qa="all_of_this_category"]'
-    jewelry_catalog_expected_header = 'Ювелирные украшения1'
+    catalog_all_categories_link = 'a[data-qa="all_of_this_category"]'
+    jewelry_catalog_expected_header = 'Ювелирные украшения'
     earrings_button = 'div[data-link-href*="earrings"]'
     jewelry_type_catalog_expected_header = 'Серьги'
     price_from_field = 'input[data-qa="min_price"]'
     price_to_field = 'input[data-qa="max_price"]'
-    price_from = '1000'
-    price_to = '6000'
+    price_from = '1500'
+    price_to = '5000'
+    field_to_name = 'To'
+    field_from_name = 'From'
     silver_checkbox = '#silver'
     show_all_inserts_button = 'div[data-qa="filter_section_insert"] button[class*="ButtonDeprecated_sklv-button"]'
     fianit_checkbox = '#fianit'
@@ -38,17 +38,17 @@ class Catalog(Base):
 
     # Getters
     def get_item_name(self):
+        """Получение названия товара из каталога"""
         return self.get_element(self.first_product_in_list_name).text
 
     def get_item_link_catalog(self):
+        """Получение ссылки на карточку товара из каталога"""
         return self.get_element(self.first_product_in_list_url).get_attribute('href')
 
     def get_item_price_catalog(self):
+        """Получение цены на товар из каталога и преобразование полученной строки в целое число"""
         current_price = self.get_element(self.first_product_in_list_price).text.splitlines()[0]
         return self.get_converted_price(current_price)
-
-    def get_current_catalog_header(self):
-        return self.get_element(self.catalog_header).text
 
     # Actions
 
@@ -57,24 +57,28 @@ class Catalog(Base):
         print('Catalog button clicked')
 
     def click_all_categories_banner(self):
-        self.get_element(self.catalog_all_categories_banner).click()
+        self.get_element(self.catalog_all_categories_link).click()
         print('All categories banner clicked')
 
     def click_on_jewelry_type(self):
         self.get_element(self.earrings_button).click()
         print('Jewelry type selected')
 
-    def clear_price_from_field(self):
-        self.get_element(self.price_from_field).send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+    def click_field(self, locator, field_name):
+        self.get_element(locator).click()
+        print(f'{field_name} field clicked')
 
-    def enter_price_from(self):
-        self.get_element(self.price_from_field).send_keys(self.price_from, Keys.RETURN)
+    def clear_field(self, locator, field_name):
+        self.get_element(locator).clear()
+        print(f'{field_name} field cleared')
 
-    def clear_price_to_field(self):
-        self.get_element(self.price_to_field).send_keys(Keys.CONTROL + 'a', Keys.BACKSPACE)
+    def enter_price(self, locator, field_name, price):
+        self.get_element(locator).send_keys(price)
+        print(f'Price {field_name} entered')
 
-    def enter_price_to(self):
-        self.get_element(self.price_to_field).send_keys(self.price_to, Keys.RETURN)
+    def confirm_price(self, locator, field_name):
+        self.get_element(locator).send_keys(Keys.RETURN)
+        print(f'Price {field_name} confirmed')
 
     def click_metal_checkbox(self):
         self.get_element(self.silver_checkbox).click()
@@ -117,42 +121,61 @@ class Catalog(Base):
         print('First product in list clicked')
 
     # Methods
+
+    def apply_filter_by_price(self, locator, field_name, price):
+        """Очистка полей цен (От и До), ввод новых значений и подтверждение"""
+        self.click_field(locator, field_name)
+        self.clear_field(locator, field_name)
+        self.enter_price(locator, field_name, price)
+        self.confirm_price(locator, field_name)
+
     def go_to_jewelry_catalog(self):
+        """Переход в каталог украшений, сравнение текущих url и заголовка с ожидаемыми"""
         self.click_header_catalog_button()
         self.click_all_categories_banner()
-        self.check_text(self.catalog_header, self.jewelry_catalog_expected_header)
-        self.assert_url(utilities.common_urls.jewelry_catalog_url)
+        self.check_page(self.catalog_header, self.jewelry_catalog_expected_header,
+                        utilities.common_urls.jewelry_catalog_url)
 
     def select_jewelry_type(self):
+        """Нажатие на чекбокс типа украшений, сравнение текущих url и заголовка с ожидаемыми"""
         self.click_on_jewelry_type()
-        self.check_text(self.catalog_header, self.jewelry_type_catalog_expected_header)
-        self.assert_url(utilities.common_urls.jewelry_type_catalog_url)
+        self.check_page(self.catalog_header, self.jewelry_type_catalog_expected_header,
+                        utilities.common_urls.jewelry_type_catalog_url)
 
-    def apply_filter_by_price(self):
-        self.clear_price_from_field()
-        self.enter_price_from()
-        self.clear_price_to_field()
-        self.enter_price_to()
+    def apply_filter_by_price_from(self):
+        """Применение фильтра по цене От"""
+        self.apply_filter_by_price(self.price_from_field, self.field_from_name, self.price_from)
+
+    def apply_filter_by_price_to(self):
+        """Применение фильтра по цене До"""
+        self.apply_filter_by_price(self.price_to_field, self.field_to_name, self.price_to)
 
     def select_metal(self):
+        """Нажатие на чекбокс металла"""
         self.click_metal_checkbox()
 
     def select_insert(self):
+        """Раскрытие списка вставок и нажатие на чекбокс вставки"""
         self.click_show_all_inserts_button()
         self.click_insert_checkbox()
 
     def select_insert_color(self):
+        """Раскрытие списка цветов вставок, раскрытие списка скрытых цветов вставок
+        и нажатие на чекбокс цвета вставки"""
         self.click_inserts_color_button()
         self.click_show_all_inserts_color_button()
         self.click_insert_color_checkbox()
 
     def select_quantity_of_inserts(self):
+        """Раскрытие списка количества вставок и нажатие на чекбокс количества вставок"""
         self.click_quantity_of_inserts_button()
         self.click_inserts_quantity_checkbox()
 
     def select_delivery_time(self):
+        """Фильтр по способу доставки - нажатие на радиобаттон 'Забрать в магазине'"""
         self.click_pickup_in_shop_button()
 
     def click_first_product(self):
+        """Нажатие на первый товар в каталоге"""
         self.driver.refresh()
         self.click_first_product_in_list()

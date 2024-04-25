@@ -1,8 +1,6 @@
 .idea/
 venv
 .pytest_cache
-screenshots
-userdata.py
 __pycache__
 base\__pycache__
 pages\__pycache__

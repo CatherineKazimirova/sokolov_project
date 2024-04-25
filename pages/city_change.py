@@ -10,11 +10,12 @@ class CityChange(Base):
     # Locators
     city_button = 'div[data-tooltip-id="city-helper"]'
     city_name = 'span[class*="CitySelectButton_city"]'
-    select_city_name = 'li[data-city="Санкт-Петербург"]'
+    desired_city = 'li[data-city="Санкт-Петербург"]'
 
     # Getters
     def get_city_name(self):
-        return self.get_element(self.select_city_name).text
+        """Получение названия выбираемого города из модального окна Выберите город"""
+        return self.get_element(self.desired_city).text
 
     # Actions
     def click_city_button(self):
@@ -22,13 +23,15 @@ class CityChange(Base):
         print('City button clicked')
 
     def click_city_name(self):
-        city = self.get_city_name()
-        self.get_element(self.select_city_name).click()
+        self.get_element(self.desired_city).click()
         print('City name clicked')
-        self.check_text(self.city_name, city)
-        print('Check that the city has been selected')
 
     # Methods
     def change_city(self):
+        """Изменение города на желаемый. Нажатие на кнопку с названием города в хедере, сохранение названия
+        желаемого города, выбор желаемого города, сравнение сохраненного названия с названием выбранного
+        города в хедере"""
         self.click_city_button()
+        city = self.get_city_name()
         self.click_city_name()
+        self.check_text(self.city_name, city)
