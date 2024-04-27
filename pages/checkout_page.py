@@ -1,12 +1,10 @@
+import allure
 import utilities.common_urls
 from base.base_page import Base
+from utilities.logger import Logger
 
 
 class Checkout(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     checkout_header = 'div[class*="Rout_block"] > h3'
@@ -94,31 +92,40 @@ class Checkout(Base):
 
     # Methods
     def clear_basket(self):
-        """Проверка наличия в чекауте товаров и удаление, если они есть. Проверка загрузки хедера, затем
-        ожидание прогрузки страницы чекаут и проверка длины блока товаров. Если длина == 0 - переход
-        на главную. Если товаров > 0 - удаление всех товаров по очереди и переход на главную страницу."""
-        self.get_element(self.checkout_button).click()
-        self.get_element(self.header_link)
-        self.check_visibility(self.checkout_loader)
-        products = self.get_products_block_len()
-        if products > 0:
-            for i in range(products):
-                self.click_delete_product_button()
-                self.check_visibility(self.delete_product_loader)
-            print('Checkout cleared')
-            self.click_header_link()
-        elif products == 0:
-            print('Checkout has already been cleared')
-            self.click_header_link()
+        with allure.step("Clear basket"):
+            Logger.add_start_step("clear_basket")
+            """Проверка наличия в чекауте товаров и удаление, если они есть. Проверка загрузки хедера, затем
+            ожидание прогрузки страницы чекаут и проверка длины блока товаров. Если длина == 0 - переход
+            на главную. Если товаров > 0 - удаление всех товаров по очереди и переход на главную страницу."""
+            self.get_element(self.checkout_button).click()
+            self.get_element(self.header_link)
+            self.check_visibility(self.checkout_loader)
+            products = self.get_products_block_len()
+            if products > 0:
+                for i in range(products):
+                    self.click_delete_product_button()
+                    self.check_visibility(self.delete_product_loader)
+                print('Checkout cleared')
+                self.click_header_link()
+            elif products == 0:
+                print('Checkout has already been cleared')
+                self.click_header_link()
+            Logger.add_end_step(self.driver.current_url, "clear_basket")
 
-    def check_page_basket(self):
-        """Переход в чекаут, сравнение текущих url и заголовка с ожидаемыми"""
-        self.check_page(self.checkout_header, self.expected_checkout_header, utilities.common_urls.checkout_url)
+    def check_page_checkout(self):
+        with allure.step("Check page checkout"):
+            Logger.add_start_step("check_page_basket")
+            """Переход в чекаут, сравнение текущих url и заголовка с ожидаемыми"""
+            self.check_page(self.checkout_header, self.expected_checkout_header, utilities.common_urls.checkout_url)
+            Logger.add_end_step(self.driver.current_url, "check_page_basket")
 
     def check_product_checkout(self, product_name_from_catalog, product_price_from_catalog):
-        """Сравнение названия и цены со значениями, полученными из каталога"""
-        self.check_name_and_price(product_name_from_catalog, self.get_product_name_checkout(),
-                                  product_price_from_catalog, self.get_product_price_checkout())
+        with allure.step("Check product checkout"):
+            Logger.add_start_step("check_product_checkout")
+            """Сравнение названия и цены со значениями, полученными из каталога"""
+            self.check_name_and_price(product_name_from_catalog, self.get_product_name_checkout(),
+                                      product_price_from_catalog, self.get_product_price_checkout())
+            Logger.add_end_step(self.driver.current_url, "check_product_checkout")
 
     def select_shop_and_check(self):
         """Выбор магазина в модальном окне Самовывоз: ввод названия ТЦ, в котором находится магазин,
@@ -132,21 +139,27 @@ class Checkout(Base):
         print(f'Shop {self.desired_shop_name} selected')
 
     def select_shop(self):
-        """Выбор магазина в зависимости от того, был ли он выбран при предыдущих заказах: если блок доставки
-        отсутствует - ранее пользователь в этом городе делал заказы в магазин; если блок доставки присутствует
-        и название ТЦ не равно желаемому (desired_shop_name), вызывается функция выбора магазина (в желаемом ТЦ);
-        если название ТЦ совпадает с желаемым, то вызывается фукнция подтверждения способа оплаты и заказа"""
-        if self.get_shop_block_len() > 0 and self.desired_shop_name in self.get_shop_name_in_delivery_block():
-            print('Shop has already been selected before')
-        elif self.get_shop_block_len() > 0 and self.desired_shop_name not in self.get_shop_name_in_delivery_block():
-            self.click_select_another_shop_button()
-            self.select_shop_and_check()
-        elif self.get_shop_block_len() == 0:
-            self.click_shops_button()
-            self.select_shop_and_check()
+        with allure.step("Select shop"):
+            Logger.add_start_step("select_shop")
+            """Выбор магазина в зависимости от того, был ли он выбран при предыдущих заказах: если блок доставки
+            отсутствует - ранее пользователь в этом городе делал заказы в магазин; если блок доставки присутствует
+            и название ТЦ не равно желаемому (desired_shop_name), вызывается функция выбора магазина (в желаемом ТЦ);
+            если название ТЦ совпадает с желаемым, то вызывается фукнция подтверждения способа оплаты и заказа"""
+            if self.get_shop_block_len() > 0 and self.desired_shop_name in self.get_shop_name_in_delivery_block():
+                print('Shop has already been selected before')
+            elif self.get_shop_block_len() > 0 and self.desired_shop_name not in self.get_shop_name_in_delivery_block():
+                self.click_select_another_shop_button()
+                self.select_shop_and_check()
+            elif self.get_shop_block_len() == 0:
+                self.click_shops_button()
+                self.select_shop_and_check()
+            Logger.add_end_step(self.driver.current_url, "select_shop")
 
     def select_payment_method_and_confirm_order(self):
-        """Нажатие на кнопку Оплата при получении и подтверждение оформления заказа"""
-        self.click_no_prepayment_button()
-        self.driver.refresh()
-        self.click_confirm_order_button()
+        with allure.step("Authorization check"):
+            Logger.add_start_step("select_payment_method_and_confirm_order")
+            """Нажатие на кнопку Оплата при получении и подтверждение оформления заказа"""
+            self.click_no_prepayment_button()
+            self.driver.refresh()
+            self.click_confirm_order_button()
+            Logger.add_end_step(self.driver.current_url, "select_payment_method_and_confirm_order")

@@ -2,13 +2,11 @@ import time
 from base.base_page import Base
 import utilities.userdata
 import utilities.common_urls
+from utilities.logger import Logger
+import allure
 
 
 class Authorization(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
 
@@ -82,15 +80,17 @@ class Authorization(Base):
         print('Profile button clicked')
 
     # Methods
-
     def auth_with_email(self):
-        """Авторизация по паролю и е-мейлу. Нажатие на кнопку профиля/логина в хедере, нажатие на кнопку Войти по
-        e-mail, ввод е-мейла и пароля, подтверждение е-мейла и пароля"""
-        self.click_header_login_button()
-        self.click_email_button()
-        self.enter_email()
-        self.enter_password()
-        self.click_login_with_email_button()
+        with allure.step("Authorization with email"):
+            Logger.add_start_step("auth_with_email")
+            """Авторизация по паролю и е-мейлу. Нажатие на кнопку профиля/логина в хедере, нажатие на кнопку Войти по
+            e-mail, ввод е-мейла и пароля, подтверждение е-мейла и пароля"""
+            self.click_header_login_button()
+            self.click_email_button()
+            self.enter_email()
+            self.enter_password()
+            self.click_login_with_email_button()
+            Logger.add_end_step(self.driver.current_url, "auth_with_email")
 
     def enter_and_confrim_code(self):
         """Авторизация по смс-коду. Клик в поле ввода смс-кода, ввод кода, подтверждение кода, проверка
@@ -101,25 +101,31 @@ class Authorization(Base):
         self.check_visibility(self.modal_auth)
 
     def auth_with_phone(self):
-        """Авторизация по смс-коду для пользователя из белого списка: отключена капча и присвоен постоянный
-        смс-код. Происходит открытие модального окна Вход через хедер, ввод номера телефона и нажатие на
-        кнопку отправки кода. Проверяется присутствие ошибки 'Отправка СМС доступна через 60 секунд...'.
-        Если ошибка есть, то через 60 секунд код отправляется еще раз и вызывается функция авторизации.
-        Если ошибки нет, то функция авторизации по смс-коду вызывается сразу"""
-        self.click_header_login_button()
-        self.click_phone_field()
-        self.enter_phone()
-        self.click_send_code_button()
-        self.check_visibility(self.send_code_loader)
-        if self.get_error_block_len() == 0:
-            self.enter_and_confrim_code()
-        elif self.get_error_block_len() > 0:
-            time.sleep(60)
+        with allure.step("Authorization with phone"):
+            Logger.add_start_step("auth_with_phone")
+            """Авторизация по смс-коду для пользователя из белого списка: отключена капча и присвоен постоянный
+            смс-код. Происходит открытие модального окна Вход через хедер, ввод номера телефона и нажатие на
+            кнопку отправки кода. Проверяется присутствие ошибки 'Отправка СМС доступна через 60 секунд...'.
+            Если ошибка есть, то через 60 секунд код отправляется еще раз и вызывается функция авторизации.
+            Если ошибки нет, то функция авторизации по смс-коду вызывается сразу"""
+            self.click_header_login_button()
+            self.click_phone_field()
+            self.enter_phone()
             self.click_send_code_button()
-            self.enter_and_confrim_code()
+            self.check_visibility(self.send_code_loader)
+            if self.get_error_block_len() == 0:
+                self.enter_and_confrim_code()
+            elif self.get_error_block_len() > 0:
+                time.sleep(60)
+                self.click_send_code_button()
+                self.enter_and_confrim_code()
+            Logger.add_end_step(self.driver.current_url, "auth_with_phone")
 
     def check_auth(self):
-        """Нажатие на кнопку профиля в хедере, переход на страницу профиля и проверка url профиля"""
-        self.click_profile_button()
-        self.assert_url(utilities.common_urls.profile_url)
-        print('Check user profile - login successful')
+        with allure.step("Authorization check"):
+            Logger.add_start_step("check_auth")
+            """Нажатие на кнопку профиля в хедере, переход на страницу профиля и проверка url профиля"""
+            self.click_profile_button()
+            self.assert_url(utilities.common_urls.profile_url)
+            print('Check user profile - login successful')
+            Logger.add_end_step(self.driver.current_url, "check_auth")

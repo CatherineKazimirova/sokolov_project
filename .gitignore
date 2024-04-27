@@ -7,3 +7,6 @@ pages\__pycache__
 screenshots\__pycache__
 tests\__pycache__
 utilities\__pycache__
+test_results
+allure-report
+

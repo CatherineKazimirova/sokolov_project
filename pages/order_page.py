@@ -1,12 +1,10 @@
+import allure
 from base.base_page import Base
 import utilities.common_urls
+from utilities.logger import Logger
 
 
 class OrderPage(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     order_page_header = 'h1[data-qa="main_order_number"]'
@@ -51,21 +49,30 @@ class OrderPage(Base):
 
     # Methods
     def check_order_page(self):
-        """"Ожидание загрузки заголовка, поиск части ожидаемого url  и заголовка в текущих url и заголовке
-        и проверка, что части найдены"""
-        self.get_element(self.order_page_header)
-        self.assert_part_of_text(self.order_page_expected_partial_header, self.get_order_page_header())
-        self.assert_part_of_url(utilities.common_urls.orders_url)
+        with allure.step("Check order page"):
+            Logger.add_start_step("check_order_page")
+            """"Ожидание загрузки заголовка, поиск части ожидаемого url  и заголовка в текущих url и заголовке
+            и проверка, что части найдены"""
+            self.get_element(self.order_page_header)
+            self.assert_part_of_text(self.order_page_expected_partial_header, self.get_order_page_header())
+            self.assert_part_of_url(utilities.common_urls.orders_url)
+            Logger.add_end_step(self.driver.current_url, "check_order_page")
 
     def cancel_order(self):
-        """Нажатие на кнопку отмены заказа, ввод и подтверждение причины отмены, отмена заказа"""
-        self.click_cancel_order_button()
-        self.select_cancel_reason_radiobutton()
-        self.enter_cancel_reason()
-        self.click_confirm_cancel_order_button()
-        self.click_double_confirm_order_cancel_button()
+        with allure.step("Cancel order"):
+            Logger.add_start_step("cancel_order")
+            """Нажатие на кнопку отмены заказа, ввод и подтверждение причины отмены, отмена заказа"""
+            self.click_cancel_order_button()
+            self.select_cancel_reason_radiobutton()
+            self.enter_cancel_reason()
+            self.click_confirm_cancel_order_button()
+            self.click_double_confirm_order_cancel_button()
+            Logger.add_end_step(self.driver.current_url, "cancel_order")
 
     def check_status(self):
-        """Проверка статуса заказа"""
-        self.check_text(self.profile_order_status, self.expected_status)
-        print(f'Order status checked: {self.get_element(self.profile_order_status).text}')
+        with allure.step("Check status"):
+            Logger.add_start_step("check_status")
+            """Проверка статуса заказа"""
+            self.check_text(self.profile_order_status, self.expected_status)
+            print(f'Order status checked: {self.get_element(self.profile_order_status).text}')
+            Logger.add_end_step(self.driver.current_url, "check_status")

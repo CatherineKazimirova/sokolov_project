@@ -1,11 +1,9 @@
+import allure
 from base.base_page import Base
+from utilities.logger import Logger
 
 
 class ProductCard(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     product_name_card = 'h1[class*="ProductTitle_title"]'
@@ -46,15 +44,21 @@ class ProductCard(Base):
         print('Product confirmed in basket, checkout')
 
     # Methods
-    """Сравнение url карточки товара, названия и цены со значениями, полученными из каталога"""
     def check_product_card(self, product_url_from_catalog, product_name_from_catalog, product_price_from_catalog):
-        self.check_name_and_price(product_name_from_catalog, self.get_product_name_card(), product_price_from_catalog, self.get_product_price_card())
-        self.assert_url(product_url_from_catalog)
+        with allure.step("Check product card"):
+            Logger.add_start_step("check_product_card")
+            """Сравнение url карточки товара, названия и цены со значениями, полученными из каталога"""
+            self.check_name_and_price(product_name_from_catalog, self.get_product_name_card(), product_price_from_catalog, self.get_product_price_card())
+            self.assert_url(product_url_from_catalog)
+            Logger.add_end_step(self.driver.current_url, "check_product_card")
 
     def add_to_basket(self, product_name_from_catalog, product_price_from_catalog):
-        """Нажатие на кнопку добавления товара в корзину, проверка открытия модального окна (проверка заголовка)
-        сравнение цены товара и названия товара, полученных из каталога"""
-        self.click_add_to_basket_button()
-        self.check_text(self.modal_basket_header, self.modal_basket_expected_header)
-        self.check_name_and_price(product_name_from_catalog, self.get_product_name_modal_basket(), product_price_from_catalog, self.get_product_price_modal_basket())
-        self.click_confirm_order_in_basket_button()
+        with allure.step("Add to basket"):
+            Logger.add_start_step("add_to_basket")
+            """Нажатие на кнопку добавления товара в корзину, проверка открытия модального окна (проверка заголовка)
+            сравнение цены товара и названия товара, полученных из каталога"""
+            self.click_add_to_basket_button()
+            self.check_text(self.modal_basket_header, self.modal_basket_expected_header)
+            self.check_name_and_price(product_name_from_catalog, self.get_product_name_modal_basket(), product_price_from_catalog, self.get_product_price_modal_basket())
+            self.click_confirm_order_in_basket_button()
+            Logger.add_end_step(self.driver.current_url, "add_to_basket")

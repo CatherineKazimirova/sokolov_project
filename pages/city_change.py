@@ -1,11 +1,9 @@
+import allure
 from base.base_page import Base
+from utilities.logger import Logger
 
 
 class CityChange(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     city_button = 'div[data-tooltip-id="city-helper"]'
@@ -28,10 +26,13 @@ class CityChange(Base):
 
     # Methods
     def change_city(self):
-        """Изменение города на желаемый. Нажатие на кнопку с названием города в хедере, сохранение названия
-        желаемого города, выбор желаемого города, сравнение сохраненного названия с названием выбранного
-        города в хедере"""
-        self.click_city_button()
-        city = self.get_city_name()
-        self.click_city_name()
-        self.check_text(self.city_name, city)
+        with allure.step("Change city"):
+            Logger.add_start_step("change_city")
+            """Изменение города на желаемый. Нажатие на кнопку с названием города в хедере, сохранение названия
+            желаемого города, выбор желаемого города, сравнение сохраненного названия с названием выбранного
+            города в хедере"""
+            self.click_city_button()
+            city = self.get_city_name()
+            self.click_city_name()
+            self.check_text(self.city_name, city)
+            Logger.add_end_step(self.driver.current_url, "change_city")

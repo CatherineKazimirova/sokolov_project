@@ -1,13 +1,11 @@
 import utilities.common_urls
 from base.base_page import Base
 from selenium.webdriver.common.keys import Keys
+from utilities.logger import Logger
+import allure
 
 
 class Catalog(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     header_catalog_button = 'button[data-qa="header_catalog_nav_open_btn"]'
@@ -130,52 +128,82 @@ class Catalog(Base):
         self.confirm_price(locator, field_name)
 
     def go_to_jewelry_catalog(self):
-        """Переход в каталог украшений, сравнение текущих url и заголовка с ожидаемыми"""
-        self.click_header_catalog_button()
-        self.click_all_categories_banner()
-        self.check_page(self.catalog_header, self.jewelry_catalog_expected_header,
-                        utilities.common_urls.jewelry_catalog_url)
+        with allure.step("Go to jewelry catalog"):
+            Logger.add_start_step("go_to_jewelry_catalog")
+            """Переход в каталог украшений, сравнение текущих url и заголовка с ожидаемыми"""
+            self.click_header_catalog_button()
+            self.click_all_categories_banner()
+            self.check_page(self.catalog_header, self.jewelry_catalog_expected_header,
+                            utilities.common_urls.jewelry_catalog_url)
+            Logger.add_end_step(self.driver.current_url, "go_to_jewelry_catalog")
 
     def select_jewelry_type(self):
-        """Нажатие на чекбокс типа украшений, сравнение текущих url и заголовка с ожидаемыми"""
-        self.click_on_jewelry_type()
-        self.check_page(self.catalog_header, self.jewelry_type_catalog_expected_header,
-                        utilities.common_urls.jewelry_type_catalog_url)
+        with allure.step("Select jewelry type"):
+            Logger.add_start_step("select_jewelry_type")
+            """Нажатие на чекбокс типа украшений, сравнение текущих url и заголовка с ожидаемыми"""
+            self.click_on_jewelry_type()
+            self.check_page(self.catalog_header, self.jewelry_type_catalog_expected_header,
+                            utilities.common_urls.jewelry_type_catalog_url)
+            Logger.add_end_step(self.driver.current_url, "select_jewelry_type")
 
     def apply_filter_by_price_from(self):
-        """Применение фильтра по цене От"""
-        self.apply_filter_by_price(self.price_from_field, self.field_from_name, self.price_from)
+        with allure.step("Apply filter by price from"):
+            Logger.add_start_step("apply_filter_by_price_from")
+            """Применение фильтра по цене От"""
+            self.apply_filter_by_price(self.price_from_field, self.field_from_name, self.price_from)
+            Logger.add_end_step(self.driver.current_url, "apply_filter_by_price_from")
 
     def apply_filter_by_price_to(self):
-        """Применение фильтра по цене До"""
-        self.apply_filter_by_price(self.price_to_field, self.field_to_name, self.price_to)
+        with allure.step("Apply filter by price to"):
+            Logger.add_start_step("apply_filter_by_price_to")
+            """Применение фильтра по цене До"""
+            self.apply_filter_by_price(self.price_to_field, self.field_to_name, self.price_to)
+            Logger.add_end_step(self.driver.current_url, "apply_filter_by_price_to")
 
     def select_metal(self):
-        """Нажатие на чекбокс металла"""
-        self.click_metal_checkbox()
+        with allure.step("Select metal"):
+            Logger.add_start_step("select_metal")
+            """Нажатие на чекбокс металла"""
+            self.click_metal_checkbox()
+            Logger.add_end_step(self.driver.current_url, "select_metal")
 
     def select_insert(self):
-        """Раскрытие списка вставок и нажатие на чекбокс вставки"""
-        self.click_show_all_inserts_button()
-        self.click_insert_checkbox()
+        with allure.step("Select insert"):
+            Logger.add_start_step("select_insert")
+            """Раскрытие списка вставок и нажатие на чекбокс вставки"""
+            self.click_show_all_inserts_button()
+            self.click_insert_checkbox()
+            Logger.add_end_step(self.driver.current_url, "select_insert")
 
     def select_insert_color(self):
-        """Раскрытие списка цветов вставок, раскрытие списка скрытых цветов вставок
-        и нажатие на чекбокс цвета вставки"""
-        self.click_inserts_color_button()
-        self.click_show_all_inserts_color_button()
-        self.click_insert_color_checkbox()
+        with allure.step("Select insert color"):
+            Logger.add_start_step("select_insert_color")
+            """Раскрытие списка цветов вставок, раскрытие списка скрытых цветов вставок
+            и нажатие на чекбокс цвета вставки"""
+            self.click_inserts_color_button()
+            self.click_show_all_inserts_color_button()
+            self.click_insert_color_checkbox()
+            Logger.add_end_step(self.driver.current_url, "select_insert_color")
 
     def select_quantity_of_inserts(self):
-        """Раскрытие списка количества вставок и нажатие на чекбокс количества вставок"""
-        self.click_quantity_of_inserts_button()
-        self.click_inserts_quantity_checkbox()
+        with allure.step("Select quantity of inserts"):
+            Logger.add_start_step("select_quantity_of_inserts")
+            """Раскрытие списка количества вставок и нажатие на чекбокс количества вставок"""
+            self.click_quantity_of_inserts_button()
+            self.click_inserts_quantity_checkbox()
+            Logger.add_end_step(self.driver.current_url, "select_quantity_of_inserts")
 
     def select_delivery_time(self):
-        """Фильтр по способу доставки - нажатие на радиобаттон 'Забрать в магазине'"""
-        self.click_pickup_in_shop_button()
+        with allure.step("Select delivery time"):
+            Logger.add_start_step("select_delivery_time")
+            """Фильтр по способу доставки - нажатие на радиобаттон 'Забрать в магазине'"""
+            self.click_pickup_in_shop_button()
+            Logger.add_end_step(self.driver.current_url, "select_delivery_time")
 
     def click_first_product(self):
-        """Нажатие на первый товар в каталоге"""
-        self.driver.refresh()
-        self.click_first_product_in_list()
+        with allure.step("Click first product"):
+            Logger.add_start_step("click_first_product")
+            """Нажатие на первый товар в каталоге"""
+            self.driver.refresh()
+            self.click_first_product_in_list()
+            Logger.add_end_step(self.driver.current_url, "click_first_product")

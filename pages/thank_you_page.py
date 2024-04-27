@@ -1,12 +1,10 @@
+import allure
 from base.base_page import Base
 import utilities.common_urls
+from utilities.logger import Logger
 
 
 class ThankYouPage(Base):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
 
     # Locators
     order_created_header = 'div[class*="Order_order"] > h1'
@@ -21,10 +19,16 @@ class ThankYouPage(Base):
 
     # Methods
     def check_thank_you_page(self):
-        """Сравнение url и заголовка страницы Спасибо за заказ с ожидаемыми"""
-        self.check_page(self.order_created_header, self.order_created_expected_header, utilities.common_urls.thank_you_url)
+        with allure.step("Check thank you page"):
+            Logger.add_start_step("check_thank_you_page")
+            """Сравнение url и заголовка страницы Спасибо за заказ с ожидаемыми"""
+            self.check_page(self.order_created_header, self.order_created_expected_header, utilities.common_urls.thank_you_url)
+            Logger.add_end_step(self.driver.current_url, "check_thank_you_page")
 
     def go_to_order_page(self):
-        """Переход на страницу созданного заказа, переключение на вкладку со страницей"""
-        self.click_order_page_button()
-        self.driver.switch_to.window(self.driver.window_handles[1])
+        with allure.step("Go to order page"):
+            Logger.add_start_step("go_to_order_page")
+            """Переход на страницу созданного заказа, переключение на вкладку со страницей"""
+            self.click_order_page_button()
+            self.driver.switch_to.window(self.driver.window_handles[1])
+            Logger.add_end_step(self.driver.current_url, "go_to_order_page")
